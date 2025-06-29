@@ -9,7 +9,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { validateStudentData } from '@/utils/validation';
 import { REQUIRED_DOCUMENTS, checkDocumentCompleteness, initializeDocuments } from '@/utils/documents';
-import { User, School, Phone, MapPin, FileCheck, AlertTriangle, CheckCircle } from 'lucide-react';
+import { User, School, Phone, MapPin, FileCheck, AlertTriangle, CheckCircle, UserPlus } from 'lucide-react';
+
+const recorded = [
+  { id: 1, name: 'الاستاذ ايمن رسلان' },
+  { id: 2, name: 'الاستاذ احمد الديب' },
+  { id: 3, name: 'الاستاذ هاني ماهر' },
+  { id: 4, name: 'الاستاذ ابراهيم عبدالرحيم' },
+  { id: 5, name: 'الاستاذ علاء حسن' },
+  { id: 6, name: 'الاستاذ محمد صبري' },
+  { id: 7, name: 'الاستاذ محمد عبدالقادر' },
+  { id: 8, name: 'الاستاذ فريد شوقي' },
+  { id: 9, name: 'الاستاذ سيد فرج' },
+  { id: 10, name: 'الاستاذ محمد فؤاد' }
+];
 
 const StudentForm = ({ onSubmit, editingStudent, onCancel }) => {
   const { toast } = useToast();
@@ -20,7 +33,8 @@ const StudentForm = ({ onSubmit, editingStudent, onCancel }) => {
     phoneNumber: '',
     gender: '',
     address: '',
-    documents: initializeDocuments()
+    documents: initializeDocuments(),
+    recorded: ''
   });
   const [errors, setErrors] = useState({});
   const [documentCheck, setDocumentCheck] = useState(null);
@@ -33,7 +47,8 @@ const StudentForm = ({ onSubmit, editingStudent, onCancel }) => {
       phoneNumber: '',
       gender: '',
       address: '',
-      documents: initializeDocuments()
+      documents: initializeDocuments(),
+      recorded: ''
     });
     setErrors({});
   };
@@ -47,7 +62,8 @@ const StudentForm = ({ onSubmit, editingStudent, onCancel }) => {
         phoneNumber: editingStudent.phoneNumber || '',
         gender: editingStudent.gender || '',
         address: editingStudent.address || '',
-        documents: editingStudent.documents || initializeDocuments()
+        documents: editingStudent.documents || initializeDocuments(),
+        recorded: editingStudent.recorded || ''
       });
     } else {
       resetForm();
@@ -123,6 +139,15 @@ const StudentForm = ({ onSubmit, editingStudent, onCancel }) => {
       toast({
         title: "مستندات ناقصة",
         description: "يرجى استكمال جميع المستندات المطلوبة قبل التسجيل",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!formData.recorded) {
+      toast({
+        title: "مسجل البيانات مطلوب",
+        description: "يرجى اختيار مسجل البيانات",
         variant: "destructive"
       });
       return;
@@ -248,6 +273,30 @@ const StudentForm = ({ onSubmit, editingStudent, onCancel }) => {
                 />
                 {errors.address && (
                   <p className="text-red-500 text-sm">{errors.address}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="recorded" className="flex items-center gap-2">
+                  <UserPlus className="w-4 h-4" />
+                  مسجل البيانات *
+                </Label>
+                <Select 
+                  value={formData.recorded} 
+                  onValueChange={(value) => handleInputChange('recorded', value)}
+                >
+                  <SelectTrigger className={errors.recorded ? 'border-red-500' : ''}>
+                    <SelectValue placeholder="اختر مسجل البيانات" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {recorded.map(recorded => (
+                      <SelectItem key={recorded.id} value={recorded.name}>
+                        {recorded.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.recorded && (
+                  <p className="text-red-500 text-sm">{errors.recorded}</p>
                 )}
               </div>
             </div>
