@@ -19,6 +19,9 @@ export const validateStudentData = (data) => {
   if (!data.address?.trim()) {
     errors.address = 'العنوان مطلوب';
   }
+  if (!data.recorded?.trim()) {
+    errors.address = 'اسم المسجل مطلوب';
+  }
 
   return {
     isValid: Object.keys(errors).length === 0,
