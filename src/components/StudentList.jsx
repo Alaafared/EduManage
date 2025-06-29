@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import * as XLSX from 'xlsx';
 
 const StudentList = ({ 
   students = [], 
@@ -16,13 +17,13 @@ const StudentList = ({
   onDelete,
   onImport,
   onRefresh,
-  schoolName = "مدرسة الشهيد المقدم محمد عبداللاه صالح الصناعية العسكرية المشتركة" // إضافة prop للعنوان
+  schoolName = "مدرسة الشهيد المقدم محمد عبداللاه صالح الصناعية العسكرية المشتركة"
 }) => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [genderFilter, setGenderFilter] = useState('all');
   const [activeFilters, setActiveFilters] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false); // حالة جديدة لزر التحديث
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     let count = 0;
@@ -31,7 +32,6 @@ const StudentList = ({
     setActiveFilters(count);
   }, [searchTerm, genderFilter]);
 
-  // حساب عدد الطلبة المسجلين اليوم
   const studentsToday = useMemo(() => {
     if (!Array.isArray(students)) return 0;
     const today = new Date().toISOString().split('T')[0];
@@ -49,7 +49,7 @@ const StudentList = ({
         student.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.phoneNumber?.includes(searchTerm) ||
         student.nationalId?.includes(searchTerm) ||
-        student.recorded?.toLowerCase().includes(searchTerm.toLowerCase()) // أضيف هذا السطر
+        student.recorded?.toLowerCase().includes(searchTerm.toLowerCase())
       );
       const genderMatch = genderFilter === 'all' || student.gender === genderFilter;
       return searchMatch && genderMatch;
@@ -68,7 +68,7 @@ const StudentList = ({
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
-      await onRefresh(); // انتظار اكتمال التحديث
+      await onRefresh();
     } finally {
       setIsRefreshing(false);
     }
@@ -88,8 +88,41 @@ const StudentList = ({
     
     toast({
       title: "تم التصدير بنجاح",
-      description: `تم تصدير ${filteredStudents.length} سجلات`,
+      description: `تم تصدير ${filteredStudents.length} سجلات بصيغة JSON`,
     });
+  };
+
+  const handleExportExcel = () => {
+    try {
+      const data = filteredStudents.map(student => ({
+        'الاسم': student.fullName || '-',
+        'المدرسة السابقة': student.previousSchool || '-',
+        'النوع': student.gender === 'male' ? 'ذكر' : student.gender === 'female' ? 'أنثى' : '-',
+        'رقم الهاتف': student.phoneNumber || '-',
+        'العنوان': student.address || '-',
+        'مسجل البيانات': student.recorded || '-',
+        'تاريخ التسجيل': student.registrationDate ? new Date(student.registrationDate).toLocaleDateString() : '-',
+        'الرقم القومي': student.nationalId || '-',
+        'الصف': student.grade || '-',
+        'الفصل': student.class || '-'
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "الطلبة");
+      XLSX.writeFile(wb, `students_${new Date().toISOString().split('T')[0]}.xlsx`);
+      
+      toast({
+        title: "تم تصدير Excel بنجاح",
+        description: `تم تصدير ${filteredStudents.length} سجلات بصيغة Excel`,
+      });
+    } catch (error) {
+      toast({
+        title: "خطأ في تصدير Excel",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
   const handleImport = (event) => {
@@ -161,7 +194,7 @@ const StudentList = ({
         
         <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; text-align: left; font-size: 12px; color: #777;">
           <p>تم الطباعة في ${new Date().toLocaleString()}</p>
-           <p>عدد الصفحات: <span class="pageNumber"></span></p>
+          <p>عدد الصفحات: <span class="pageNumber"></span></p>
         </div>
       </div>
     `;
@@ -210,7 +243,7 @@ const StudentList = ({
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
-      {/* شريط الإحصائيات */}
+      {/* Statistics Bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-blue-50 border-blue-100">
           <CardContent className="p-4 flex items-center justify-between">
@@ -249,7 +282,7 @@ const StudentList = ({
         </Card>
       </div>
 
-      {/* شريط البحث والفلترات والأدوات */}
+      {/* Search and Filters Bar */}
       <Card className="border-0 shadow-sm">
         <CardContent className="p-6 space-y-4">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
@@ -303,17 +336,30 @@ const StudentList = ({
               </Select>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              {/* زر تصدير JSON منفصل */}
               <Button
                 variant="outline"
                 onClick={handleExport}
-                className="gap-2"
                 disabled={filteredStudents.length === 0}
+                className="gap-2"
               >
-                <Download className="w-4 h-4" />
-                تصدير
+                <FileText className="w-4 h-4" />
+                تصدير JSON
               </Button>
               
+              {/* زر تصدير Excel منفصل */}
+              <Button
+                variant="outline"
+                onClick={handleExportExcel}
+                disabled={filteredStudents.length === 0}
+                className="gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                تصدير Excel
+              </Button>
+              
+              {/* زر الاستيراد */}
               <div className="relative">
                 <input
                   type="file"
@@ -352,29 +398,29 @@ const StudentList = ({
         </CardContent>
       </Card>
 
-      {/* شريط الحالة */}
+      {/* Status Bar */}
       <div className="flex items-center justify-between bg-gray-50/50 p-3 rounded-lg border border-gray-200">
-  <div className="text-sm text-black flex items-center gap-2 font-medium">
-    <Users className="w-4 h-4 text-gray-800" />
-    <span className="text-gray-900">
-      {loading ? 'جاري التحميل...' : `عرض ${filteredStudents.length} من ${students.length} طالب`}
-    </span>
-  </div>
-  
-  {!loading && filteredStudents.length > 0 && (
-    <Button 
-      variant="ghost" 
-      size="sm"
-      onClick={handlePrint}
-      className="text-gray-800 hover:text-white flex items-center gap-1 font-medium"
-    >
-      <FileText className="w-4 h-4" />
-      <span>طباعة التقرير</span>
-    </Button>
-  )}
-</div>
+        <div className="text-sm text-black flex items-center gap-2 font-medium">
+          <Users className="w-4 h-4 text-gray-800" />
+          <span className="text-gray-900">
+            {loading ? 'جاري التحميل...' : `عرض ${filteredStudents.length} من ${students.length} طالب`}
+          </span>
+        </div>
+        
+        {!loading && filteredStudents.length > 0 && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handlePrint}
+            className="text-gray-800 hover:text-white flex items-center gap-1 font-medium"
+          >
+            <FileText className="w-4 h-4" />
+            <span>طباعة التقرير</span>
+          </Button>
+        )}
+      </div>
 
-      {/* قائمة الطلبة */}
+      {/* Students List */}
       <div className="grid gap-4">
         {loading ? (
           <Card>
