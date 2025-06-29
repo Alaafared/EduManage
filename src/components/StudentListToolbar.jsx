@@ -84,6 +84,8 @@ const StudentListToolbar = ({
         switch (key) {
           case 'gender': 
             return `النوع: ${value === 'male' ? 'ذكر' : 'أنثى'}`;
+          case 'recorded':
+            return `مسجل البيانات: ${value}`;
           default:
             return `${key}: ${value}`;
         }
@@ -133,6 +135,7 @@ const StudentListToolbar = ({
               <th>التليفون</th>
               <th>النوع</th>
               <th>العنوان</th>
+              <th>مسجل البيانات</th>
               <th>تاريخ التسجيل</th>
             </tr>
           </thead>
@@ -146,6 +149,7 @@ const StudentListToolbar = ({
                 <td>${student.phoneNumber || 'غير متوفر'}</td>
                 <td>${student.gender === 'male' ? 'ذكر' : 'أنثى'}</td>
                 <td>${student.address || 'غير متوفر'}</td>
+                <td>${student.recorded || 'غير محدد'}</td>
                 <td>${formattedDate(student.registrationDate)}</td>
               </tr>
             `).join('')}
@@ -177,10 +181,6 @@ const StudentListToolbar = ({
               <CalendarCheck2 className="w-4 h-4" />
               عدد الطلبة المسجلين اليوم: {studentsRegisteredToday}
             </span>
-            {/* <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center gap-1">
-              <Filter className="w-4 h-4" />
-              المعروض: {filteredStudents.length}
-            </span> */}
           </div>
         </CardTitle>
       </CardHeader>
