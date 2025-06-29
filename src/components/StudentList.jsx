@@ -48,7 +48,8 @@ const StudentList = ({
         student.previousSchool?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.phoneNumber?.includes(searchTerm) ||
-        student.nationalId?.includes(searchTerm)
+        student.nationalId?.includes(searchTerm) ||
+        student.recorded?.toLowerCase().includes(searchTerm.toLowerCase()) // أضيف هذا السطر
       );
       const genderMatch = genderFilter === 'all' || student.gender === genderFilter;
       return searchMatch && genderMatch;
@@ -131,8 +132,6 @@ const StudentList = ({
           </p>
         </div>
         
-
-        
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;text-align: center;">
           <thead>
             <tr style="background-color: #f3f4f6; text-align: center;">
@@ -140,7 +139,8 @@ const StudentList = ({
               <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">المدرسة السابقة</th>
               <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">النوع</th>
               <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">رقم الهاتف</th>
-              <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">العنوان </th>
+              <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">العنوان</th>
+              <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">مسجل البيانات</th>
               <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">تاريخ التسجيل</th>
             </tr>
           </thead>
@@ -152,7 +152,7 @@ const StudentList = ({
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${student.gender === 'male' ? 'ذكر' : student.gender === 'female' ? 'أنثى' : '-'}</td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${student.phoneNumber || '-'}</td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${student.address || '-'}</td>
-
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${student.recorded || '-'}</td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${student.registrationDate ? new Date(student.registrationDate).toLocaleDateString() : '-'}</td>
               </tr>
             `).join('')}
