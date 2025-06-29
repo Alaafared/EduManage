@@ -3,10 +3,9 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, UserPlus } from 'lucide-react';
 import { checkDocumentCompleteness } from '@/utils/documents';
 import { useToast } from '@/components/ui/use-toast';
-import { Download, Filter, Plus } from 'lucide-react';
 
 const StudentListItem = ({ student, index, onEdit, onDelete }) => {
   const { toast } = useToast();
@@ -26,7 +25,7 @@ const StudentListItem = ({ student, index, onEdit, onDelete }) => {
       <Card className="card-hover">
         <CardContent className="p-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <p className="font-semibold text-lg">{student.fullName}</p>
                 <p className="text-sm text-muted-foreground">{student.previousSchool}</p>
@@ -38,6 +37,12 @@ const StudentListItem = ({ student, index, onEdit, onDelete }) => {
               <div>
                 <p className="text-sm"><span className="font-medium">النوع:</span> {student.gender === 'male' ? 'ذكر' : 'أنثى'}</p>
                 <p className="text-sm"><span className="font-medium">العنوان:</span> {student.address}</p>
+              </div>
+              <div>
+                <p className="text-sm flex items-center gap-1">
+                  <UserPlus className="w-4 h-4" />
+                  <span className="font-medium">مسجل البيانات:</span> {student.recorded || 'غير محدد'}
+                </p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-3">
