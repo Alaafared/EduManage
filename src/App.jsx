@@ -41,6 +41,10 @@ function App() {
         description: "لم نتمكن من جلب قائمة الطلبة من قاعدة البيانات.",
         variant: "destructive"
       });
+      const formattedStudents = data.map(student => ({
+        ...student,
+        recorded: student.recorded || 'غير محدد' // إضافة هذا السطر
+      }));
     } else {
       setStudents(data);
     }
@@ -54,9 +58,18 @@ function App() {
   }, [session, fetchStudents]);
 
   const handleAddStudent = async (studentData) => {
-    const { fullName, previousSchool, nationalId, phoneNumber, gender, address, documents } = studentData;
+    const { fullName, previousSchool, nationalId, phoneNumber, gender, address, documents, recorded } = studentData;
     
-    const payload = { fullName, previousSchool, nationalId, phoneNumber, gender, address, documents };
+     const payload = { 
+    fullName, 
+    previousSchool, 
+    nationalId, 
+    phoneNumber, 
+    gender, 
+    address, 
+    documents,
+    recorded, // إضافة هذا السطر
+  };
 
     if (editingStudent) {
       const { data, error } = await supabase
