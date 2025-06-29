@@ -7,6 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 
+const recorded = [
+  { id: 1, name: 'الاستاذ ايمن رسلان' },
+  { id: 2, name: 'الاستاذ احمد الديب' },
+  { id: 3, name: 'الاستاذ هاني ماهر' },
+  { id: 4, name: 'الاستاذ ابراهيم عبدالرحيم' },
+  { id: 5, name: 'الاستاذ علاء حسن' },
+  { id: 6, name: 'الاستاذ محمد صبري' },
+  { id: 7, name: 'الاستاذ محمد عبدالقادر' },
+  { id: 8, name: 'الاستاذ فريد شوقي' },
+  { id: 9, name: 'الاستاذ سيد فرج' },
+  { id: 10, name: 'الاستاذ محمد فؤاد' }
+];
+
 const StudentListFilters = ({ filters, onFilterChange, onClearFilters }) => {
   return (
     <motion.div
@@ -64,15 +77,25 @@ const StudentListFilters = ({ filters, onFilterChange, onClearFilters }) => {
               </Select>
             </div>
 
-            {/* حقل العنوان */}
+            {/* حقل مسجل البيانات */}
             <div className="space-y-2">
-              <Label htmlFor="addressFilter">العنوان</Label>
-              <Input
-                id="addressFilter"
-                placeholder="ابحث بالعنوان"
-                value={filters.address}
-                onChange={(e) => onFilterChange('address', e.target.value)}
-              />
+              <Label htmlFor="recordedFilter">مسجل البيانات</Label>
+              <Select
+                value={filters.recorded}
+                onValueChange={(value) => onFilterChange('recorded', value)}
+              >
+                <SelectTrigger id="recordedFilter">
+                  <SelectValue placeholder="اختر المسجل" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">الكل</SelectItem>
+                  {recorded.map((recorded) => (
+                    <SelectItem key={recorded.id} value={recorded.name}>
+                      {recorded.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* حقل التليفون */}
