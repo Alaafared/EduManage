@@ -42,10 +42,14 @@ export const generatePrintableReport = (students, filters = {}) => {
     if (filters.address && !student.address.toLowerCase().includes(filters.address.toLowerCase())) {
       return false;
     }
+    if (filters.recorded && !student.recorded.toLowerCase().includes(filters.recorded.toLowerCase())) {
+      return false;
+    }
     if (filters.phoneNumber && !student.phoneNumber.includes(filters.phoneNumber)) {
       return false;
     }
     return true;
+  
   });
 
   return {
